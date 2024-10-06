@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creative Countdown Timer</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .timer-input {
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 60px;
+            padding: 5px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 5px 10px;
+            border: none;
+            background-color: #28a745;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .timers {
+            margin-top: 20px;
+        }
+
+        .timer {
+            background-color: #e7f0ff;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            transition: transform 0.2s;
+        }
+
+        .timer:hover {
+            transform: scale(1.05);
+        }
+
+        .timer .time {
+            font-size: 2em;
+        }
+
+        .timer .color-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Creative Countdown Timer</h1>
+        <div class="timer-input">
+            <input type="number" id="minutes" placeholder="Minutes" required>
+            <input type="number" id="seconds" placeholder="Seconds" required>
+            <input type="color" id="colorPicker" value="#ff0000">
+            <button id="start">Start Timer</button>
+        </div>
+        <div id="timers" class="timers"></div>
+        <audio id="alarmSound" src="alarm.mp3" preload="auto"></audio>
+    </div>
+    <script>
+        document.getElementById('start').addEventListener('click', function() {
+            const minutes = parseInt(document.getElementById('minutes').value) || 0;
+            const seconds = parseInt(document.getElementById('seconds').value) || 0;
+            const color = document.getElementById('colorPicker').value;
+            const totalTime = minutes * 60 + seconds;
+
+            if (totalTime <= 0) {
+                alert('Please enter a valid time!');
+                return;
+            }
+
+            startTimer(totalTime, color);
+        });
+
+        function startTimer(duration, color) {
+            const timerDiv = document.createElement('div');
+            timerDiv.classList.add('timer');
+            timerDiv.style.backgroundColor = color;
+            timerDiv.innerHTML = `<span class="color-indicator" style="background-color: ${color};"></span>
+                                  <span class="time">${formatTime(duration)}</span>
+                                  <button class="stop">Stop</button>`;
+            document.getElementById('timers').appendChild(timerDiv);
+
+            const interval = setInterval(function() {
+                duration--;
+
+                if (duration < 0) {
+                    clearInterval(interval);
+                    document.getElementById('alarmSound').play();
+                    alert('Time is up!');
+                    timerDiv.remove();
+                } else {
+                    timerDiv.querySelector('.time').textContent = formatTime(duration);
+                }
+            }, 1000);
+
+            timerDiv.querySelector('.stop').addEventListener('click', function() {
+                clearInterval(interval);
+                timerDiv.remove();
+            });
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+    </script>
+</body>
+</html>
